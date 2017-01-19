@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+        <script src="http://code.jquery.com/jquery-1.3.2.js"></script>
+    </head>
+    <body>
+        <div class="container">
+            <nav class="navbar navbar-default" style="width:1930px;margin-left:-400px;">
+              <div class="container-fluid">
+                <div class="navbar-header">
+                  <a class="navbar-brand" href="#">
+                    Appointments
+                  </a>
+                </div>
+              </div>
+            </nav>
+            <div class="row">
+                <button type="button" class="btn btn-default" id="new">New</button>
+            </div>
+            <div class="row" style="margin-top:30px;">
+                <div class="input-group col-md-4">
+                    <span class="input-group-btn">
+                        <button class="btn btn-default app_search search_go" type="button">Go!</button>
+                    </span>
+                    <input type="text" class="form-control search_text" placeholder="Search for...">
+                </div><!-- /input-group -->
+            </div>
+            <div class="row" id="add_app">
+                <form action="save_appointments.html" id="form" method="post" name="form">
+                    {% csrf_token %}
+                    <h3>Add Appoinments</h3>
+                    <input name="date" type="Date" value="08-15-2016">
+                    <input name="time" type="text" value="10:12PM">
+                    <input name="description" placeholder="description" type="text" value="Independence">
+                    <input name="Submit" type="submit" value="Add">
+                </form>
+            </div>
+        </div>
+        <table class="show_appointments" border="2" style="margin-top:20px;margin-left:375px;">
+            <thead>
+                <th>
+                    <td style="width:30%;">DATE</td>
+                    <td style="width:30%;">TIME</td>
+                    <td style="width:30%;">DESCRIPTION</td>
+                </th>
+                <tbody></tbody>
+            </thead>
+        </table>
+    </body>
+</html>
+<script>
+    var search;
+    var results;
+    $('.app_search').click(function(){
+       var res = $.get('get_appointments.html') 
+    });
+    function getAppointments(text=""){
+        console.log(text)
+        results = $.get('search_appointments.html', {'search_text': text}, function(){
+                    search = JSON.parse(results.responseText)
+                    $.each(search, function(i,item){
+                        $('.show_appointments tbody').text("")
+                        $('.show_appointments tbody').append('<tr><td></td><td>'+item.fields['date']+'</td><td>'+item.fields['time']+'</td><td>'+item.fields['description']+'</td></tr>')
+                    })
+        })
+
+    }
+    getAppointments();
+    $('.search_go').click(function(){
+        var text = $('.search_text').val();
+        getAppointments(text);
+    })
+</script>
